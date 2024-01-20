@@ -1,13 +1,21 @@
 package domain
 
-type HandCard struct {
+type Hand struct {
 	cards []Card
 }
 
-func (h *HandCard) addCard(card Card) {
+const handCardsMaxSize = 13
+
+func (h *Hand) AddCard(card Card) {
 	h.cards = append(h.cards, card)
 }
 
-func (h HandCard) Size() int {
+func (h *Hand) PickCard(index int) Card {
+	card := h.cards[index]
+	h.cards = append(h.cards[:index], h.cards[index+1:]...)
+	return card
+}
+
+func (h Hand) Size() int {
 	return len(h.cards)
 }

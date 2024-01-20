@@ -1,89 +1,62 @@
 package domain
 
-import (
-	"fmt"
-	"math/rand"
-)
-const EXCHANGE_CARD_HOLD_ROUND = 3
+import "fmt"
 
 type Player interface {
+	GetName() string
 	NameMyself()
-	DrawCard(deck *deck)
-	addHandCard(card Card)
-	DecideExchangeCard()
-	exchangeCard(player *Player)
-	pickExchangee() Player
+	AddHand(Card)
+	GetHands() *Hand
+	SetHands(*Hand)
+	DecideChangeHandCards()
+	PlayCard() Card
+	GetPoint() int
+	AddOnePoint()
+	GetGame() *Showdown
+	SetGame(*Showdown)
 }
 
 type player struct {
-	Point        int
-	Name         string
-	exchangeable bool
-	game
-	HandCard
+	name            string
+	point           int
+	canExchangeCard bool
+	game            *Showdown
+	hand            *Hand
+	exchangeHand    *ExchangeHands
 }
 
-type exchangeHandCard struct {
-	exchangee      Player
-	remainingRound int
+func (p player) GetName() string {
+	return p.name
 }
 
-func (p *player) DrawCard(deck *deck) {
-	p.addHandCard(deck.DrawCard())
+func (p *player) AddHand(card Card) {
+	p.hand.AddCard(card)
 }
 
-func (p *player) addHandCard(card Card) {
-	p.HandCard.addCard(card)
+func (p *player) GetHands() *Hand {
+	return p.hand
 }
 
-func (p *player) exchangeCard(player *Player) {
-
+func (p *player) SetHands(hand *Hand) {
+	p.hand = hand
 }
 
-type HumanPlayer struct {
-	player
+func (p *player) GetPoint() int {
+	return p.point
 }
 
-func (h *HumanPlayer) NameMyself() {}
-
-func (h *HumanPlayer) DecideExchangeCard() {
-	if h.exchangeable {
-		// pick one player to exchange card
-		exchange := exchangeHandCard{
-			exchangee: h.pickExchangee(),
-			remainingRound: EXCHANGE_CARD_HOLD_ROUND,
-		}
-		fmt.Println(exchange)
-	}
+func (p *player) AddOnePoint() {
+	p.point++
 }
 
-func (h *HumanPlayer) pickExchangee() Player {
-	randNumber := rand.Intn(len(h.game.players))
-	return h.game.players[randNumber]
+func (p *player) GetGame() *Showdown {
+	return p.game
 }
 
-type AIPlayer struct {
-	player
+func (p *player) SetGame(game *Showdown) {
+	p.game = game
 }
 
-func (a *AIPlayer) NameMyself() {}
-
-func (a *AIPlayer) DecideExchangeCard() {
-}
-
-func (a *AIPlayer) pickExchangee() Player {
-	randNumber := rand.Intn(len(a.game.players))
-	return a.game.players[randNumber]
-}
-
-func NewHumanPlayer() Player {
-	return &HumanPlayer{
-		player: player{},
-	}
-}
-
-func NewAIPlayer() Player {
-	return &AIPlayer{
-		player: player{},
-	}
+func (p *player) String() string {
+	return fmt.Sprintf("Name: %s", p.GetName())
 }
