@@ -89,3 +89,4 @@ func (s *Showdown) AddPlayer(player Player) {
 func (s *Showdown) GetPlayers() []Player {
 	return s.players
 }
+
